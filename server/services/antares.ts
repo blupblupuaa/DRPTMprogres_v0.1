@@ -16,7 +16,8 @@ export class AntaresService {
 
   constructor(config: AntaresConfig) {
     this.config = {
-      baseUrl: 'https://platform.antares.id:8443/~/antares-cse/antares-id',
+      baseUrl:
+        "https://platform.antares.id:8443/~/antares-cse/antares-id/hidro_try/lynk32_hidro_try",
       ...config,
     };
   }
@@ -26,37 +27,49 @@ export class AntaresService {
       const response = await fetch(
         `${this.config.baseUrl}/${this.config.applicationId}/${this.config.deviceId}/la`,
         {
-          method: 'GET',
+          method: "GET",
           headers: {
-            'X-M2M-Origin': this.config.apiKey,
-            'Content-Type': 'application/json;ty=4',
-            'Accept': 'application/json',
+            "X-M2M-Origin": this.config.apiKey,
+            "Content-Type": "application/json;ty=4",
+            Accept: "application/json",
           },
         }
       );
 
       if (!response.ok) {
-        throw new Error(`Antares API error: ${response.status} ${response.statusText}`);
+        throw new Error(
+          `Antares API error: ${response.status} ${response.statusText}`
+        );
       }
 
       const data = await response.json();
-      
+
       // Parse the Antares response format
-      const content = data['m2m:cin']?.con;
+      const content = data["m2m:cin"]?.con;
       if (!content) {
-        throw new Error('Invalid response format from Antares API');
+        throw new Error("Invalid response format from Antares API");
       }
 
       // Parse the sensor data (assuming JSON format)
-      const sensorData = typeof content === 'string' ? JSON.parse(content) : content;
-      
+      const sensorData =
+        typeof content === "string" ? JSON.parse(content) : content;
+
       return {
-        temperature: parseFloat(sensorData.temperature || sensorData.temp || sensorData.Temperature) || 0,
+        temperature:
+          parseFloat(
+            sensorData.temperature || sensorData.temp || sensorData.Temperature
+          ) || 0,
         ph: parseFloat(sensorData.ph || sensorData.pH || sensorData.PH) || 0,
-        tdsLevel: parseFloat(sensorData.tdsLevel || sensorData.tds || sensorData.TDS || sensorData.waterLevel) || 0,
+        tdsLevel:
+          parseFloat(
+            sensorData.tdsLevel ||
+              sensorData.tds ||
+              sensorData.TDS ||
+              sensorData.waterLevel
+          ) || 0,
       };
     } catch (error) {
-      console.error('Error fetching data from Antares:', error);
+      console.error("Error fetching data from Antares:", error);
       return null;
     }
   }
@@ -66,41 +79,58 @@ export class AntaresService {
       const response = await fetch(
         `${this.config.baseUrl}/${this.config.applicationId}/${this.config.deviceId}?rcn=4&lim=${limit}`,
         {
-          method: 'GET',
+          method: "GET",
           headers: {
-            'X-M2M-Origin': this.config.apiKey,
-            'Content-Type': 'application/json;ty=4',
-            'Accept': 'application/json',
+            "X-M2M-Origin": this.config.apiKey,
+            "Content-Type": "application/json;ty=4",
+            Accept: "application/json",
           },
         }
       );
 
       if (!response.ok) {
-        throw new Error(`Antares API error: ${response.status} ${response.statusText}`);
+        throw new Error(
+          `Antares API error: ${response.status} ${response.statusText}`
+        );
       }
 
       const data = await response.json();
-      const contentInstances = data['m2m:cnt']?.['m2m:cin'] || [];
-      
-      return contentInstances.map((instance: any) => {
-        const content = instance.con;
-        const sensorData = typeof content === 'string' ? JSON.parse(content) : content;
-        
-        return {
-          temperature: parseFloat(sensorData.temperature || sensorData.temp || sensorData.Temperature) || 0,
-          ph: parseFloat(sensorData.ph || sensorData.pH || sensorData.PH) || 0,
-          tdsLevel: parseFloat(sensorData.tdsLevel || sensorData.tds || sensorData.TDS || sensorData.waterLevel) || 0,
-        };
-      }).reverse(); // Reverse to get chronological order
+      const contentInstances = data["m2m:cnt"]?.["m2m:cin"] || [];
+
+      return contentInstances
+        .map((instance: any) => {
+          const content = instance.con;
+          const sensorData =
+            typeof content === "string" ? JSON.parse(content) : content;
+
+          return {
+            temperature:
+              parseFloat(
+                sensorData.temperature ||
+                  sensorData.temp ||
+                  sensorData.Temperature
+              ) || 0,
+            ph:
+              parseFloat(sensorData.ph || sensorData.pH || sensorData.PH) || 0,
+            tdsLevel:
+              parseFloat(
+                sensorData.tdsLevel ||
+                  sensorData.tds ||
+                  sensorData.TDS ||
+                  sensorData.waterLevel
+              ) || 0,
+          };
+        })
+        .reverse(); // Reverse to get chronological order
     } catch (error) {
-      console.error('Error fetching historical data from Antares:', error);
+      console.error("Error fetching historical data from Antares:", error);
       return [];
     }
   }
 }
 
 export const antaresService = new AntaresService({
-  apiKey: process.env.ANTARES_API_KEY || process.env.API_KEY || 'demo_key',
-  deviceId: process.env.ANTARES_DEVICE_ID || 'hydro_sensor',
-  applicationId: process.env.ANTARES_APPLICATION_ID || 'hydroponic_system',
+  apiKey: process.env.ANTARES_API_KEY || process.env.API_KEY || "demo_key",
+  deviceId: process.env.ANTARES_DEVICE_ID || "hydro_sensor",
+  applicationId: process.env.ANTARES_APPLICATION_ID || "hydroponic_system",
 });
