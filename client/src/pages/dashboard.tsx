@@ -16,17 +16,17 @@ export default function Dashboard() {
     SensorReading[]
   >({
     queryKey: ["/api/sensor-readings"],
-    refetchInterval: 10000, // Refresh every 30 seconds
+    refetchInterval: 10000, // Refresh every 10 seconds
   });
 
   const { data: latestReading } = useQuery<SensorReading | null>({
     queryKey: ["/api/sensor-readings/latest"],
-    refetchInterval: 10000, // Refresh every 30 seconds
+    refetchInterval: 10000, // Refresh every 10 seconds
   });
 
   const { data: systemStatus } = useQuery<SystemStatus>({
     queryKey: ["/api/system-status"],
-    refetchInterval: 10000, // Refresh every 30 seconds
+    refetchInterval: 10000, // Refresh every 10 seconds
   });
 
   const handleSyncData = async () => {

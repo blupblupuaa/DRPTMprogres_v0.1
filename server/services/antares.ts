@@ -1,3 +1,6 @@
+import dotenv from 'dotenv';
+
+dotenv.config();
 export interface AntaresConfig {
   apiKey: string;
   deviceId: string;
@@ -16,8 +19,7 @@ export class AntaresService {
 
   constructor(config: AntaresConfig) {
     this.config = {
-      baseUrl:
-        "https://platform.antares.id:8443/~/antares-cse/antares-id/hidro_try/lynk32_hidro_try",
+      baseUrl: "https://platform.antares.id:8443/~/antares-cse/antares-id",
       ...config,
     };
   }
